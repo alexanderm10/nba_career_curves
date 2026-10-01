@@ -1,0 +1,20 @@
+# Data: re-created by 01_pull_box.R and later scripts
+data/
+
+# Large model objects and run logs: re-created by the scripts
+output/*.rds
+output/qa/*.rds
+output/logs/
+
+# Compiled Stan executables (cmdstanr builds these next to the .stan files)
+07_state_space
+14_state_space_cov
+*.exe
+
+# R and OS clutter
+Rplots.pdf
+.Rhistory
+.Rapp.history
+.RData
+.Rproj.user/
+.DS_Store

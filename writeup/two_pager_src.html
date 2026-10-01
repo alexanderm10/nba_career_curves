@@ -1,0 +1,201 @@
+<title>Shooting Career Curves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: two letter-size sheets, like a printed scouting report. One committed paper look (light only),
+   figures carry the same paper tone. Condensed sports-scoreboard display face, serif body, plain sans for data. */
+:root {
+  color-scheme: light;
+  --desk:   #e9eaec;   /* behind the sheets */
+  --paper:  #fcfcfb;   /* matches the figure background */
+  --ink:    #1c1d1f;
+  --ink-2:  #55575c;
+  --muted:  #8a8c91;
+  --rule:   #dfe0e3;
+  --blue:   #2a78d6;   /* within-player / model */
+  --orange: #eb6834;   /* pooled / observed average */
+  --aqua:   #1baf7a;   /* form */
+  --display: "Barlow Condensed", "Avenir Next Condensed", "Arial Narrow", sans-serif;
+  --sans:    "Barlow", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --serif:   "Source Serif 4", Charter, Georgia, serif;
+}
+* { box-sizing: border-box; }
+body { background: var(--desk); color: var(--ink); font-family: var(--serif); margin: 0;
+       padding-inline: 16px; padding-block: 32px; }
+.sheet { background: var(--paper); max-width: 8.5in; margin: 0 auto 32px; padding: 0.55in 0.6in 0.5in;
+         box-shadow: 0 1px 3px rgba(20, 22, 26, 0.12), 0 8px 24px rgba(20, 22, 26, 0.06);
+         display: flex; flex-direction: column; gap: 18px; }
+.sheet:last-child { margin-bottom: 0; }
+
+.masthead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;
+            font-family: var(--sans); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--ink-2); border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+.masthead strong { color: var(--ink); font-weight: 600; }
+
+h1 { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 0.98; letter-spacing: -0.005em;
+     margin: 4px 0 0; text-wrap: balance; text-transform: uppercase; }
+h1 .accent { color: var(--blue); }
+h2 { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.05; margin: 0;
+     text-wrap: balance; }
+.lede { font-size: 15.5px; line-height: 1.5; margin: 0; max-width: 64ch; }
+p { margin: 0; }
+
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0;
+         border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.stat { padding: 10px 14px 12px; min-width: 0; }
+.stat + .stat { border-left: 1px solid var(--rule); }
+.stat .num { font-family: var(--display); font-weight: 700; font-size: 38px; line-height: 1;
+             font-variant-numeric: tabular-nums; }
+.stat .num small { font-size: 20px; font-weight: 600; margin-left: 2px; }
+.stat .what { font-family: var(--sans); font-size: 12.5px; line-height: 1.35; color: var(--ink-2); margin-top: 4px; }
+.n-blue { color: var(--blue); } .n-aqua { color: var(--aqua); } .n-ink { color: var(--ink); }
+
+figure { margin: 0; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+figure img { width: 100%; height: auto; display: block; }
+.fig-head { display: flex; flex-direction: column; gap: 3px; }
+.kicker { font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--muted); font-weight: 600; }
+figcaption { font-family: var(--sans); font-size: 12px; line-height: 1.45; color: var(--ink-2); max-width: 70ch; }
+.key { display: inline-block; width: 18px; height: 0; vertical-align: middle; margin-right: 4px;
+       border-top: 3px solid var(--blue); }
+.key.orange { border-top: 2px dashed var(--orange); }
+.key.dot { width: 8px; height: 8px; border: 0; border-radius: 50%; background: var(--ink-2); }
+
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.body-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.body-cols p { font-size: 13.5px; line-height: 1.5; }
+.body-cols h3 { font-family: var(--display); font-weight: 600; font-size: 17px; margin: 0 0 4px;
+                text-transform: uppercase; letter-spacing: 0.02em; }
+.body-cols section { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+.foot { font-family: var(--sans); font-size: 10.5px; line-height: 1.5; color: var(--muted);
+        border-top: 1px solid var(--rule); padding-top: 8px; margin-top: auto; }
+.foot b { color: var(--ink-2); font-weight: 600; }
+
+@media (max-width: 640px) {
+  body { padding-block: 16px; }
+  .sheet { padding: 22px 18px; }
+  h1 { font-size: 34px; }
+  .stats, .pair, .body-cols { grid-template-columns: minmax(0, 1fr); }
+  .stat + .stat { border-left: 0; border-top: 1px solid var(--rule); }
+}
+@media print {
+  @page { size: letter; margin: 0; }
+  body { background: var(--paper); padding: 0; }
+  .sheet { box-shadow: none; margin: 0; max-width: none; width: 8.5in; height: 11in; overflow: hidden;
+           break-after: page; }
+  .sheet:last-child { break-after: auto; }
+}
+</style>
+
+<article class="sheet">
+  <div class="masthead"><span><strong>Player development</strong> · NBA regular seasons 2002 to 2026</span><span>Page 1 of 2</span></div>
+
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <h1>The shape of a <span class="accent">shooting career</span></h1>
+    <p class="lede">A player's true shooting percentage in any one season mixes three things: who he is, how he is going
+      right now, and how the bounces went. A latent-talent model pulls those apart for 1,007 players and 6,274
+      seasons. It shows a career curve the league average hides, and it forecasts the next season better than any
+      simple rule we tested.</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="num n-blue">39<small>%</small></div>
+      <div class="what">of the variation in a season's TS% is permanent talent. A third is sampling luck.</div></div>
+    <div class="stat"><div class="num n-aqua">1.9<small>seasons</small></div>
+      <div class="what">for half of a hot or cold stretch to fade. Form is real, and it does not last.</div></div>
+    <div class="stat"><div class="num n-ink">20<small>%</small></div>
+      <div class="what">less forecast error than the best simple rule, on 2023 to 2026 seasons the model never saw.</div></div>
+  </div>
+
+  <figure>
+    <div class="fig-head">
+      <span class="kicker">The development curve</span>
+      <h2>Players peak around year six. The league average never shows it.</h2>
+    </div>
+    <img src="{{fig1}}" alt="Line chart of true shooting versus league average by years since debut. The within-player curve rises from about minus 1.7 points as a rookie to a peak near zero around year six, then falls back to about minus 1.7 by year twelve. The pooled average of players still in the league rises to about plus 0.3 by year four and stays flat through year twelve.">
+    <figcaption><span class="key"></span>Within-player curve from the state-space model, 90% band.
+      <span class="key orange"></span>Simple average of everyone playing at that experience level, ±2 standard errors.
+      The averages stay flat because weaker shooters leave the league. Following the same players shows the decline.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="fig-head">
+      <span class="kicker">Reading through the noise</span>
+      <h2>Three careers, observed season by season and as the model reads them</h2>
+    </div>
+    <img src="{{fig2}}" alt="Three small panels for LeBron James, Carlos Boozer and Mike Dunleavy. Gray points with error bars show each observed season. A smoother blue line with a band shows inferred talent. James climbs to about plus 9 points by year nine; Boozer drifts from plus 4 to minus 3; Dunleavy hovers between 0 and plus 4.">
+    <figcaption><span class="key dot"></span>Observed season, with its 90% sampling error.
+      <span class="key"></span>Inferred talent (permanent level plus current form), 90% band. Seasons on few attempts
+      have wide bars and move the line less. Boozer's dip in year 6 was mostly noise. His decline after year 8 was not.</figcaption>
+  </figure>
+
+  <div class="foot"><b>Measure.</b> True shooting % = points / (2 × (FGA + 0.44 × FTA)), minus the league value that
+    season, in percentage points. Players who debuted 2003 or later, seasons with at least 150 shooting attempts, two or more such seasons.</div>
+</article>
+
+<article class="sheet">
+  <div class="masthead"><span><strong>Player development</strong> · what the model learns, and whether it holds up</span><span>Page 2 of 2</span></div>
+
+  <div class="pair">
+    <figure>
+      <div class="fig-head">
+        <span class="kicker">Variance split</span>
+        <h2>Where a season's number comes from</h2>
+      </div>
+      <img src="{{fig3}}" alt="Bar chart: permanent talent 39 percent, short-term form 27 percent, sampling luck 33 percent, other noise 1 percent.">
+      <figcaption>Shares of the variance in a season's league-adjusted TS%. Sampling luck is measured, not assumed:
+        an odd-versus-even game split showed points per attempt is 14% noisier than a coin-flip model, and the model uses the corrected value.</figcaption>
+    </figure>
+    <figure>
+      <div class="fig-head">
+        <span class="kicker">Form persistence</span>
+        <h2>A hot season fades fast</h2>
+      </div>
+      <img src="{{fig4}}" alt="Decay curve of form from 100 percent at zero seasons, to 50 percent at about 1.9 seasons, to about 12 percent at six seasons, with an uncertainty band.">
+      <figcaption>Share of a form deviation still present after a gap, 90% band. A form swing of 4 points this year
+        leaves about 2.8 points of it next year.</figcaption>
+    </figure>
+  </div>
+
+  <figure>
+    <div class="fig-head">
+      <span class="kicker">Holdout test</span>
+      <h2>Does it forecast? Fit through 2022, scored on 2023 to 2026</h2>
+    </div>
+    <img src="{{fig6}}" alt="Dot chart of forecast error. State space 3.36, state space plus style 3.37, Bayesian growth curve 3.66, last season league-adjusted 4.19, average development curve 4.34, last season carried forward 4.45.">
+    <figcaption>942 player-seasons from 313 players, errors weighted by attempts. The state-space model's 90% intervals
+      contained 88.5% of the actual outcomes. All adjusted forecasts use the realized league average of the held-out season, which a real forecast would have to predict.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="fig-head">
+      <span class="kicker">A second clock</span>
+      <h2>Count years or count minutes? Years wins, narrowly.</h2>
+    </div>
+    <img src="{{fig5}}" alt="Two panels of within-player curves. Against years since debut, the curve rises steeply to a peak near year four and declines after year eight. Against career minutes, it rises steeply over the first few thousand minutes, peaks near 7,500, and slowly declines.">
+    <figcaption>Within-player curves from a model with a player effect, 95% bands. In year three, players have anywhere
+      from 1,500 to 6,600 career minutes, so the two clocks really do differ. Years still fits better and forecasts slightly better.</figcaption>
+  </figure>
+
+  <div class="body-cols">
+    <section>
+      <h3>What did not add value</h3>
+      <p>A player's style last season (big or perimeter, creator or spot-up) did not improve the forecast: 3.37 against
+        3.36. The style effects are real, but the permanent talent term already carries them. Prior minutes were also no
+        better than years. Strong and weak teams do sit in different parts of style space, but that gap is tangled with
+        roster spread and team quality, so it supports no claim that a style wins games.</p>
+    </section>
+    <section>
+      <h3>Limits</h3>
+      <p>Box scores are a coarse view of shooting; tracking and shot-location data would sharpen every piece of this.
+        Long careers are a selected group, which the within-player model handles better than the averages but not
+        perfectly. The curve is quadratic in years. A flexible version peaks earlier, around year four, and shows the same late decline. Style scores enter the model as if known exactly.</p>
+    </section>
+  </div>
+
+  <div class="foot"><b>Data and method.</b> ESPN box scores via hoopR, 2002 to 2026 regular seasons, All-Star games removed.
+    Talent model: player level + AR(1) form across seasons + known sampling error, fit in Stan (CmdStan 2.40, 4 chains,
+    Rhat ≤ 1.01, no divergences). Every model was scored against simple rivals on the same held-out seasons.</div>
+</article>
